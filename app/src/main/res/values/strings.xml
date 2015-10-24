@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">FaceDetect</string>
     <string name="action_settings">Settings</string>
+
+    <string name="btn_from_gallery">从图库中获取图片</string>
+    <string name="btn_from_camera">拍照获取图片</string>
 </resources>

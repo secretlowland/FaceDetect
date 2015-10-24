@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
-    android:background="@color/colorPrimary"
+    android:background="@drawable/bg"
+    app:statusBarBackground="@drawable/bg"
     tools:context="com.andy.facedetect.MainActivity">
 
     <include layout="@layout/content_main" />
