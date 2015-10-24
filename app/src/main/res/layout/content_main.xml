@@ -8,36 +8,24 @@
     tools:context="com.andy.facedetect.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.andy.facedetect.view.FaceView
-        android:id="@+id/face_view"
-        android:layout_centerInParent="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/select_img"
-            android:text="选择图片"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/start_detect"
-            android:text="开始识别"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-
-    <ProgressBar
-        android:id="@+id/progress"
-        android:scrollbarSize="50dp"
+        android:orientation="vertical"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/from_gallery"
+            android:text="从图库中获取图片"
+            android:layout_weight="1"
+            android:layout_width="200dp"
+            android:layout_height="0dp" />
+        <Button
+            android:id="@+id/from_camera"
+            android:text="拍照获取图片"
+            android:layout_weight="1"
+            android:layout_marginTop="20dp"
+            android:layout_width="200dp"
+            android:layout_height="0dp" />
+    </LinearLayout>
+
 </RelativeLayout>

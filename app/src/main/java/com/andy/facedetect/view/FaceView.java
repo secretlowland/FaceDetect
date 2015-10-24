@@ -2,17 +2,14 @@ package com.andy.facedetect.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import com.andy.facedetect.R;
+import android.view.ViewGroup;
 
 
 /**
@@ -39,8 +36,6 @@ public class FaceView extends View {
     }
 
     private void init() {
-        this.setMeasuredDimension(10, 10);
-        this.setBackgroundColor(Color.DKGRAY );
         paint = new Paint();
         paint.setColor(Color.RED);
         paint.setTextSize(25);
@@ -81,13 +76,17 @@ public class FaceView extends View {
      * @param bitmap 要识别的图片
      */
     public void setImage(Bitmap bitmap) {
+        if (bitmap == null) {
+            return;
+        }
         this.image = bitmap;
         this.imgWidth = image.getWidth();
         this.imgHeight =image.getHeight();
-        Log.d("TAG", "width-->"+imgWidth);
-        Log.d("TAG", "height-->"+imgHeight);
-        this.setMeasuredDimension(imgWidth, imgHeight);
-        this.measure(imgWidth, imgHeight);
+        ViewGroup.LayoutParams params = this.getLayoutParams();
+        params.width = imgWidth;
+        params.height = imgHeight;
+        requestLayout();
+        invalidate();
     }
 
     /**
@@ -101,8 +100,6 @@ public class FaceView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.d("TAG", "m width-->" + getMeasuredWidth());
-        Log.d("TAG", "m height-->"+getMeasuredHeight());
     }
 
     @Override
