@@ -6,11 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int SELECT_FROM_CAMERA = 2;
 
     // Define the directory of image captured by camera
-    private static final String CAMERA_CAPTURE_CACHE_DIR = "/capture";
+    private static final String CAMERA_CAPTURE_CACHE_NAME = "temp.jpg";
 
     private Button fromGallery, fromCamera;
     private String imgPath;
@@ -43,7 +45,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d("TAG", "request code -->"+requestCode);
+        Log.d("TAG", "result code -->"+resultCode);
         if (resultCode != RESULT_OK ) {
+            if (resultCode == RESULT_CANCELED) {
+                return;
+            }
             Toast.makeText(this, "获取图片失败！", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -87,18 +94,30 @@ public class MainActivity extends AppCompatActivity {
         fromCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File cacheDir = getExternalCacheDir();
-                if (cacheDir !=null) {
-                    imgPath = cacheDir.getPath() + CAMERA_CAPTURE_CACHE_DIR;
+                imgPath = getCacheImgPath();
+                if (imgPath !=null) {
+                    Uri imgUri = Uri.fromFile(new File(imgPath));
+                    Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    i.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);
+                    startActivityForResult(i, SELECT_FROM_CAMERA);
+                } else {
+                    Toast.makeText(MainActivity.this, "获取缓存目录失败!", Toast.LENGTH_SHORT).show();
                 }
-                Uri imgUri = Uri.fromFile(new File(imgPath));
-                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                i.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);
-                startActivityForResult(i, SELECT_FROM_CAMERA);
             }
         });
     }
 
+    /**
+     * 获取通过相机拍照的缓存路径
+     * @return  缓存路径
+     */
+    private String getCacheImgPath() {
+        File cacheDir = getExternalCacheDir();
+        if (cacheDir == null) {
+            cacheDir = getCacheDir();
+        }
+        return cacheDir == null ? null : cacheDir.getPath() + "/" + CAMERA_CAPTURE_CACHE_NAME;
+    }
 
 
 }
