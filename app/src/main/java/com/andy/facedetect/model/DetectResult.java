@@ -69,11 +69,11 @@ public class DetectResult {
         this.url = url;
     }
 
-    public List getFace() {
+    public List<FaceInfo> getFace() {
         return face;
     }
 
-    public void setFace(List face) {
+    public void setFace(List<FaceInfo> face) {
         this.face = face;
     }
 }

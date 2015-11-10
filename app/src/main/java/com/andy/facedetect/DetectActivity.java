@@ -3,18 +3,20 @@ package com.andy.facedetect;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.RectF;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andy.facedetect.model.DetectResult;
 import com.andy.facedetect.model.FaceAttribute;
 import com.andy.facedetect.model.FaceInfo;
 import com.andy.facedetect.model.FacePosition;
-import com.andy.facedetect.view.FaceView;
 
 import java.io.File;
 import java.util.List;
@@ -28,7 +30,10 @@ import retrofit.client.Response;
  */
 public class DetectActivity extends AppCompatActivity {
 
-    private FaceView faceView;
+    private View profile;
+    private TextView faceAttr;
+    private ImageView imgView;
+    private RelativeLayout imgContainer;
     private ProgressBar progressBar;
 
     private Bitmap imgBitmap;
@@ -39,8 +44,10 @@ public class DetectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detect);
 
-        faceView = (FaceView) findViewById(R.id.face_view);
+        imgContainer = (RelativeLayout) findViewById(R.id.img_container);
+        imgView = (ImageView) findViewById(R.id.img_view);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        faceAttr = (TextView) findViewById(R.id.face_attr);
 
         init();
         showBitmap();
@@ -76,9 +83,7 @@ public class DetectActivity extends AppCompatActivity {
     }
 
     private void showBitmap() {
-        if (imgBitmap !=null) {
-            faceView.setImage(imgBitmap);
-        }
+        imgView.setImageBitmap(imgBitmap);
     }
 
     private void startDetect() {
@@ -92,6 +97,52 @@ public class DetectActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Generate the face profile.
+     * @param faceCenter the center point of the face profile
+     * @param widthPer the width percent of the face profile
+     * @param heightPer the height percent of the face profile
+     */
+    private void populateProfile(FacePosition.Point faceCenter, float widthPer, float heightPer) {
+        if (faceCenter==null) return;
+        int imgWidth = imgView.getWidth();
+        int imgHeight = imgView.getHeight();
+        int width = (int)(imgWidth*widthPer/100);
+        int height = (int)(imgHeight*heightPer/100);
+        int leftMargin = (int)(faceCenter.getX() - widthPer/2)*imgWidth/100;
+        int topMargin = (int)(faceCenter.getY() - heightPer/2)*imgHeight/100;
+
+        profile = new View(this);
+        profile.setBackgroundColor(Color.parseColor("#996950a1"));
+        profile.setAlpha(0.6f);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
+        params.addRule(RelativeLayout.ALIGN_LEFT, imgView.getId());
+        params.addRule(RelativeLayout.ALIGN_TOP, R.id.img_view);
+        params.setMargins(leftMargin, topMargin, 0, 0);
+        imgContainer.addView(profile, params);
+    }
+
+    /**
+     * Generate the attribute information of the face
+     * @param attr the attribute of the face
+     */
+    private void populateFaceAttr(FaceAttribute attr) {
+        if (attr == null) return;
+        StringBuilder attribute = new StringBuilder();
+        String gender = attr.getGender().getValue();
+        int genderConfidence = (int)attr.getGender().getConfidence();
+
+        int age = attr.getAge().getValue();
+        int ageRange = attr.getAge().getRange();
+
+        attribute.append("性别：").append(gender.equals("Male") ? "男" : "女").append("(准确率").append(genderConfidence).append("%)\n");
+        attribute.append("年龄：").append(age).append("岁\n");
+
+        faceAttr.setText(attribute.toString());
+
+    }
+
+
     /*********************************************** Callback *************************************/
 
     /**
@@ -100,7 +151,10 @@ public class DetectActivity extends AppCompatActivity {
     private FaceDetect.Callback detectCallback = new FaceDetect.Callback() {
         @Override
         public void onDetectCompleted(DetectResult result, Response response) {
-            List<FaceInfo> faceList = result.getFace();
+            List<FaceInfo> faceList = null;
+            if (result!=null) {
+                faceList = result.getFace();
+            }
             if (faceList == null || faceList.size() <=0) {
                 Toast.makeText(getApplicationContext(), "没有识别到人脸", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
@@ -111,26 +165,11 @@ public class DetectActivity extends AppCompatActivity {
             FaceAttribute attribute =faceInfo.getFaceAttribute();
             FacePosition position = faceInfo.getFacePosition();
 
-            String sex =attribute.getGender().getValue();
-            int age = attribute.getAge().getValue();
-
-            int imgWidth = result.getImgWidth();
-            int imgHeight = result.getImgHeight();
-            float profileWidth = position.getWidth();
-            float profileHeight = position.getHeight();
-            FacePosition.Point center = position.getCenter();
-
-            // 此处传的值均为相对图片的比例
-            RectF rectF = new RectF();
-            rectF.left = center.getX() - profileWidth/2;
-            rectF.top = center.getY() - profileHeight/2;
-            rectF.right = center.getX() + profileWidth/2;
-            rectF.bottom = center.getY() + profileHeight/2;
-
-            faceView.setInfo(sex + " " + age + "岁");
-            faceView.setProfile(rectF);
-            faceView.refresh();
             progressBar.setVisibility(View.GONE);
+
+            populateProfile(position.getCenter(), position.getWidth(), position.getHeight());
+            populateFaceAttr(attribute);
+
         }
 
         @Override
