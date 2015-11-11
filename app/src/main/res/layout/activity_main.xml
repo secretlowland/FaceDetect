@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/bg"
     app:statusBarBackground="@drawable/bg"
-    tools:context="com.andy.facedetect.MainActivity">
+    tools:context=".act.MainActivity">
 
     <include layout="@layout/content_main" />
 

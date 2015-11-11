@@ -1,4 +1,4 @@
-package com.andy.facedetect;
+package com.andy.facedetect.act;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -13,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andy.facedetect.R;
+import com.andy.facedetect.func.FaceDetect;
 import com.andy.facedetect.model.DetectResult;
 import com.andy.facedetect.model.FaceAttribute;
 import com.andy.facedetect.model.FaceInfo;
@@ -129,14 +132,31 @@ public class DetectActivity extends AppCompatActivity {
     private void populateFaceAttr(FaceAttribute attr) {
         if (attr == null) return;
         StringBuilder attribute = new StringBuilder();
+
         String gender = attr.getGender().getValue();
         int genderConfidence = (int)attr.getGender().getConfidence();
-
         int age = attr.getAge().getValue();
         int ageRange = attr.getAge().getRange();
+        String race = attr.getRace().getRace();
+        // Switch race to Chinese
+        switch (race) {
+            case "Asian":
+                race = "亚洲人";
+                break;
+            case "White":
+                race = "白人";
+                break;
+            case "Black":
+                race = "黑人";
+                break;
+        }
+        int raceConfidence = (int)attr.getRace().getConfidence();
+        int smiling = (int)attr.getSmiling().getValue();
 
         attribute.append("性别：").append(gender.equals("Male") ? "男" : "女").append("(准确率").append(genderConfidence).append("%)\n");
         attribute.append("年龄：").append(age).append("岁\n");
+        attribute.append("种族：").append(race).append("(准确率").append(raceConfidence).append("%)\n");
+        attribute.append("微笑程度：").append(smiling).append("%\n");
 
         faceAttr.setText(attribute.toString());
 
@@ -151,12 +171,13 @@ public class DetectActivity extends AppCompatActivity {
     private FaceDetect.Callback detectCallback = new FaceDetect.Callback() {
         @Override
         public void onDetectCompleted(DetectResult result, Response response) {
+            Log.d("TAG", "response-->"+response.getBody());
             List<FaceInfo> faceList = null;
             if (result!=null) {
                 faceList = result.getFace();
             }
             if (faceList == null || faceList.size() <=0) {
-                Toast.makeText(getApplicationContext(), "没有识别到人脸", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "没有识别到人脸，请保持头像端正", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
                 return;
             }
@@ -175,6 +196,7 @@ public class DetectActivity extends AppCompatActivity {
         @Override
         public void onDetectFailed(RetrofitError error) {
             Toast.makeText(getApplicationContext(),"识别失败！", Toast.LENGTH_SHORT).show();
+            Log.d("TAG", "识别失败-->"+error);
             progressBar.setVisibility(View.GONE);
         }
     };

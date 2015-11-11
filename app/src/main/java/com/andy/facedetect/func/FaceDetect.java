@@ -1,4 +1,4 @@
-package com.andy.facedetect;
+package com.andy.facedetect.func;
 
 
 import com.andy.facedetect.api.FaceDetectAPI;
@@ -44,7 +44,7 @@ public class FaceDetect {
     /**
      * 请求图片识别的回调函数
      */
-    interface Callback {
+    public interface Callback {
         void onDetectCompleted(DetectResult result, Response response);
         void onDetectFailed(RetrofitError error);
     }

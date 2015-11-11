@@ -1,4 +1,4 @@
-package com.andy.facedetect;
+package com.andy.facedetect.act;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.andy.facedetect.R;
 
 import java.io.File;
 
