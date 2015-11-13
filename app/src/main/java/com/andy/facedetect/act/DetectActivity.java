@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -118,6 +120,12 @@ public class DetectActivity extends AppCompatActivity {
         profile = new View(this);
         profile.setBackgroundColor(Color.parseColor("#996950a1"));
         profile.setAlpha(0.6f);
+
+        // Add animation
+        ScaleAnimation anim = new ScaleAnimation(1.5f, 1.0f, 1.5f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,  0.5f);
+        anim.setDuration(500);
+        profile.startAnimation(anim);
+
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
         params.addRule(RelativeLayout.ALIGN_LEFT, imgView.getId());
         params.addRule(RelativeLayout.ALIGN_TOP, R.id.img_view);
