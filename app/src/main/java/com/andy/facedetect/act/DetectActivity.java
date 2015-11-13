@@ -22,6 +22,7 @@ import com.andy.facedetect.model.DetectResult;
 import com.andy.facedetect.model.FaceAttribute;
 import com.andy.facedetect.model.FaceInfo;
 import com.andy.facedetect.model.FacePosition;
+import com.andy.facedetect.view.ProfileView;
 
 import java.io.File;
 import java.util.List;
@@ -35,7 +36,7 @@ import retrofit.client.Response;
  */
 public class DetectActivity extends AppCompatActivity {
 
-    private View profile;
+    private ProfileView profile;
     private TextView faceAttr;
     private ImageView imgView;
     private RelativeLayout imgContainer;
@@ -117,9 +118,7 @@ public class DetectActivity extends AppCompatActivity {
         int leftMargin = (int)(faceCenter.getX() - widthPer/2)*imgWidth/100;
         int topMargin = (int)(faceCenter.getY() - heightPer/2)*imgHeight/100;
 
-        profile = new View(this);
-        profile.setBackgroundColor(Color.parseColor("#996950a1"));
-        profile.setAlpha(0.6f);
+        profile = new ProfileView(this);
 
         // Add animation
         ScaleAnimation anim = new ScaleAnimation(1.5f, 1.0f, 1.5f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,  0.5f);
