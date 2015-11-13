@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import com.andy.facedetect.model.DetectResult;
 import com.andy.facedetect.model.FaceAttribute;
 import com.andy.facedetect.model.FaceInfo;
 import com.andy.facedetect.model.FacePosition;
+import com.andy.facedetect.view.CircleView;
 import com.andy.facedetect.view.ProfileView;
 
 import java.io.File;
@@ -29,6 +31,7 @@ import java.util.List;
 
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.http.PATCH;
 
 /**
  * This is the activity to detect the image.
@@ -115,8 +118,8 @@ public class DetectActivity extends AppCompatActivity {
         int imgHeight = imgView.getHeight();
         int width = (int)(imgWidth*widthPer/100);
         int height = (int)(imgHeight*heightPer/100);
-        int leftMargin = (int)(faceCenter.getX() - widthPer/2)*imgWidth/100;
-        int topMargin = (int)(faceCenter.getY() - heightPer/2)*imgHeight/100;
+        int leftMargin = (int)((faceCenter.getX() - widthPer/2)*imgWidth/100);
+        int topMargin = (int)((faceCenter.getY() - heightPer/2)*imgHeight/100);
 
         profile = new ProfileView(this);
 
@@ -169,6 +172,33 @@ public class DetectActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Generate some point of the face
+     * @param point the point to draw
+     * @param radiusPer the radius percent of the circle
+     */
+    private void populatePointView(FacePosition.Point point, float radiusPer) {
+        if (point == null) return;
+
+        int imgWidth = imgView.getWidth();
+        int imgHeight = imgView.getHeight();
+        int radius = (int)(imgWidth*radiusPer/100);
+        int leftMargin = (int)((point.getX() - radiusPer/2)*imgWidth/100);
+        int topMargin = (int)((point.getY() - radiusPer/2)*imgHeight/100);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(radius, radius);
+        params.setMargins(leftMargin, topMargin, 0, 0);
+        params.addRule(RelativeLayout.ALIGN_LEFT, imgView.getId());
+        params.addRule(RelativeLayout.ALIGN_TOP, imgView.getId());
+        CircleView circleView = new CircleView(this);
+        circleView.setRadius(radius);
+
+        // Hide the point view
+        circleView.setVisibility(View.INVISIBLE);
+        imgContainer.addView(circleView, params);
+
+    }
+
 
     /*********************************************** Callback *************************************/
 
@@ -197,6 +227,13 @@ public class DetectActivity extends AppCompatActivity {
 
             populateProfile(position.getCenter(), position.getWidth(), position.getHeight());
             populateFaceAttr(attribute);
+
+            float radius = position.getWidth()/20;
+            populatePointView(position.getNose(), radius);
+            populatePointView(position.getLeftEye(), radius);
+            populatePointView(position.getRightEye(), radius);
+            populatePointView(position.getLeftMouth(), radius);
+            populatePointView(position.getRightMouth(), radius);
 
         }
 

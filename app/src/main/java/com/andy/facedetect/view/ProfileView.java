@@ -15,8 +15,8 @@ import retrofit.http.PATCH;
  */
 public class ProfileView extends View {
 
-    private static final int PROFILE_BORDER_COLOR = 0xffffffff;
-    private static final int PROFILE_BORDER_WIDTH = 10;
+    private  final int PROFILE_BORDER_COLOR = 0xffffffff;
+    private  final int PROFILE_BORDER_WIDTH = 10;
     private Paint paint;
     private RectF profileBounds;
 
